@@ -1,0 +1,87 @@
+/* Navbar Component SCSS */
+.navbar {
+  padding: 0.5rem 1rem; /* Consistent padding */
+  height: 60px; /* Fixed navbar height */
+  margin-bottom: 20px;
+}
+
+/* Brand Section (Image + Text) */
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align content to the left */
+  flex-grow: 1; /* Ensure the brand takes up the space on the left */
+}
+
+/* Adjust the logo image */
+.header-img {
+  height: 50px; /* Adjust height to fit the navbar */
+  width: auto; /* Maintain aspect ratio */
+  margin-right: 0.5rem; /* Small space between image and text */
+}
+
+/* Home Brand */
+.navbar-brand {
+  font-size: 1.5rem; /* Adjust font size */
+  font-weight: bold;
+  margin-bottom: 0; /* Remove default margin */
+}
+
+/* User's Name */
+.navbar-text {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Button Styles */
+button {
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Login Button */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+
+  &:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+}
+
+/* Logout Button */
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+
+  &:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+}
+
+/* Flex container for right-aligned content */
+.d-flex {
+  display: flex;
+  align-items: center;
+}
+
+/* Container ensuring the navbar layout */
+.container {
+  display: flex;
+  justify-content: space-between; /* Ensures the brand stays on the left and buttons go to the right */
+}
+
+/* Spacing between elements */
+.ms-2 {
+  margin-left: 0.5rem; /* Small space between buttons */
+}
+
+.me-3 {
+  margin-right: 1rem; /* Add spacing between username and buttons */
+}

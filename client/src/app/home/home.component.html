@@ -1,0 +1,36 @@
+<!-- Main Menu with Image and Button -->
+<div class="menu-container">
+  <img src="../../assets/header.png" alt="El Amir Group" class="menu-image">
+<button mat-raised-button [matMenuTriggerFor]="mainMenu" class="menu-button" color="primary">Select Service</button>
+</div>
+
+<mat-menu #mainMenu="matMenu">
+  <!-- Loop through menu items -->
+  <ng-container *ngFor="let menu of menuItems">
+    <button
+      mat-menu-item
+      *ngIf="!menu.submenus"
+      (click)="navigateTo(menu.action)">
+      {{ menu.name }}
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="menu.submenus"
+      [matMenuTriggerFor]="submenus">
+      {{ menu.name }}
+    </button>
+  </ng-container>
+</mat-menu>
+
+<!-- Submenus -->
+<mat-menu #submenus="matMenu">
+  <ng-container *ngFor="let menu of menuItems">
+    <ng-container *ngIf="menu.submenus">
+      <ng-container *ngFor="let submenu of menu.submenus">
+        <button mat-menu-item (click)="navigateTo(submenu.action)">
+          {{ submenu.name }}
+        </button>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</mat-menu>

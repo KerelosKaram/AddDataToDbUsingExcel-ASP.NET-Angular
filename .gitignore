@@ -1,0 +1,35 @@
+*.txt
+*.xlsx
+
+# .NET
+.vs/
+.idea/
+.vscode/
+bin/
+obj/
+packages/
+
+# ASP.NET Core
+appsettings.Development.json
+appsettings.json
+*.db
+*.sqlite
+
+# Node.js (Angular)
+node_modules/
+npm-debug.log
+dist/
+coverage/
+
+# Angular specific
+e2e/
+
+# Visual Studio for Mac
+.vscode/
+
+# User-specific files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

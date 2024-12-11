@@ -1,0 +1,45 @@
+/* Home Component SCSS */
+
+/* Full screen container accounting for the navbar */
+.container-fluid {
+  min-height: calc(100vh - var(--navbar-height)); /* Adjust for the navbar height */
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.menu-image {
+  width: 80%;  /* Adjust the image size */
+  height: auto;
+  margin-bottom: 10px;  /* Space between image and button */
+}
+
+.menu-button {
+  margin-top: 10px;  /* Adjust the space between the image and the button */
+  width: 150px;
+}
+
+/* Navbar height variable */
+:root {
+    --navbar-height: 80px; /* Set this to match your navbar height */
+}
+
+/* Flex container for the main content */
+.d-flex {
+    justify-content: center;
+    align-items: center;
+    flex: 1; /* Ensure the content takes up remaining space */
+}
+
+/* Center the button inside the container */
+.text-center {
+    margin-top: 20px;
+}

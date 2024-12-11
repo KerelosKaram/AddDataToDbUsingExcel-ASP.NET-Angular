@@ -1,0 +1,52 @@
+.container {
+  max-width: 600px;
+  margin-top: 30px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+button {
+  width: 30%;
+  font-size: 16px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.alert-info {
+  font-size: 16px;
+}
+
+.alert-danger {
+  font-size: 16px;
+}
+
+.spinner-border {
+  margin-right: 10px;
+}
+
+.spinner-border, .text-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Button disabled styles */
+.btn-disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Loading spinner styles when sending messages */
+.btn-warning-loading {
+  position: relative;
+  display: flex;
+  align-items: center; /* Align the spinner with the text */
+}
+
+.spinner-border-sm {
+  margin-right: 5px; /* Space between the spinner and the text */
+}

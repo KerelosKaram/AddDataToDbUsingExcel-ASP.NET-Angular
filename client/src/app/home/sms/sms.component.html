@@ -1,0 +1,75 @@
+<div class="container py-3">
+  <!-- Home Button aligned to the right -->
+  <div class="mb-4 d-flex justify-content-end">
+    <button
+      class="btn btn-secondary"
+      (click)="navigateToHome()"
+    >
+      Go to Home
+    </button>
+  </div>
+
+  <h2 class="mb-4">Send SMS</h2>
+
+  <!-- Download Button under the header -->
+  <div class="mt-4 pb-3">
+    <button
+      *ngIf="!isDownloading"
+      class="btn btn-success w-100"
+      (click)="downloadFile()"
+    >
+      Download Template File
+    </button>
+  </div>
+
+  <div class="form-group">
+    <label for="file-upload" class="form-label">Choose an Excel file</label>
+    <input
+      id="file-upload"
+      type="file"
+      (change)="onFileChange($event)"
+      class="form-control"
+    />
+  </div>
+
+  <!-- File Name Display -->
+  <div *ngIf="fileName" class="alert alert-info mt-3">
+    <span>Selected File: {{ fileName }}</span>
+  </div>
+
+  <!-- Error Message Box -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success Message after sending -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <!-- Upload / Send Message Buttons -->
+  <div class="d-flex justify-content-between mt-4">
+    <button
+      *ngIf="file && !isUploading && !isFileUploaded"
+      class="btn btn-primary"
+      (click)="uploadFile()"
+    >
+      Upload
+    </button>
+
+    <button
+      class="btn btn-warning"
+      [disabled]="isSendingMessages || !isFileUploaded || isUploading"
+      (click)="sendMessages()"
+      [ngClass]="{ 'btn-disabled': isSendingMessages, 'btn-warning-loading': isSendingMessages }"
+    >
+      <span *ngIf="isSendingMessages" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Send Messages
+    </button>
+  </div>
+
+  <!-- Success Message after Upload -->
+  <div *ngIf="isFileUploaded && !errorMessage" class="alert alert-success mt-3">
+    File uploaded successfully! Ready to send messages.
+  </div>
+</div>

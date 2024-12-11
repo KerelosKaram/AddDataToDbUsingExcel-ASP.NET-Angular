@@ -1,0 +1,105 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to right, #bea7d8, #4985ec);
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .login-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 700;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+
+    label {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 600;
+    }
+
+    input {
+      height: 45px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #2575fc;
+        outline: none;
+        box-shadow: 0 0 3px rgba(37, 117, 252, 0.5);
+      }
+    }
+
+    .error {
+      font-size: 0.8rem;
+      color: #ff6b6b;
+      margin-top: 0.3rem;
+    }
+  }
+
+  .btn-primary {
+    background: #2575fc;
+    border: none;
+    border-radius: 5px;
+    height: 45px;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: #1a5bc3;
+    }
+  }
+
+  .forgot-password {
+    font-size: 0.9rem;
+    color: #2575fc;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  /* Spinner Style */
+  ngx-spinner {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Error Message Style */
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .btn-primary-loading {
+    position: relative;
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
+  
+  .spinner-border {
+    margin-right: 5px;
+  }
+  
+}
