@@ -138,6 +138,37 @@ export class QsCustomerBrandTargetComponent {
         }
       );
   }
+
+  deleteTableFromDatabase(): void {
+    this.errorMessage = null; // Reset error message
+    this.successMessage = null; // Reset success message
+  
+    const token = this.authService.getToken();
+    const headers = { Authorization: `Bearer ${token}` };
+  
+    const url = `${environment.apiUrl}/Excel/Sql2017/deletedata?tableName=QSCustomerBrandTarget`;
+    console.log(`Sending request to: ${url}`);
+  
+    // Optional: Add a loading state for the delete operation
+    this.isUploading = true; // Reusing the uploading flag for status tracking
+  
+    this.http.get(url, { headers }).subscribe({
+      next: (response) => {
+        console.log('Table data deleted successfully', response);
+        this.successMessage = 'Table data deleted successfully!';
+        this.isUploading = false; // Reset loading flag
+      },
+      error: (error) => {
+        console.error('Error deleting table data', error);
+        this.errorMessage = 'Error deleting table data. Please try again.';
+        this.isUploading = false; // Reset loading flag
+      },
+      complete: () => {
+        console.log('Delete operation completed.');
+      },
+    });
+  }
+
   navigateToHome(): void {
     window.location.href = '/home';  // Adjust the URL to your home page
   }

@@ -1,3 +1,4 @@
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -80,17 +81,37 @@ namespace API.Controllers
         }
 
 
-        // [HttpGet("Excel/OneNineTwo/sms/download")]
-        // public async Task<IActionResult> DownloadExcelFileAsync()
-        // {
-        //     string path = Path.Combine("wwwroot", "Templates", "SMS_API.xlsx");
+        // Still Not Used (For future if needed)
+        [HttpGet("Excel/OneNineTwo/deletedata")]
+        public async Task<IActionResult> DeleteDataFromTable([FromQuery] string tableName)
+        {
+            try
+            {
+                var dbName = "SMSServer";
 
-        //     if (System.IO.File.Exists(path))  
-        //     {
-        //         var fileStream = await Task.Run(() => System.IO.File.OpenRead(path));
-        //         return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Path.GetFileName(path));  
-        //     }  
-        //     return NotFound(); 
-        // }
+                // Resolve the entity type dynamically
+                var entityType = Type.GetType($"API.Data.Models.Entities.OneNineTwo.{tableName}");
+                if (entityType == null)
+                {
+                    return BadRequest($"Entity type '{tableName}' not found.");
+                }
+
+                // Get the generic method definition from the service
+                var method = _excelImportService.GetType()
+                    .GetMethod(nameof(_excelImportService.DeleteDataFromDatabase));
+
+                // Make the method generic with the resolved entity type
+                var genericMethod = method.MakeGenericMethod(entityType);
+
+                // Invoke the method dynamically, passing the database name
+                await (Task)genericMethod.Invoke(_excelImportService, new object[] { dbName });
+
+                return Ok(new { message = $"All data from '{tableName}' table has been deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting data: {ex.Message}");
+            }
+        }
     }
 }

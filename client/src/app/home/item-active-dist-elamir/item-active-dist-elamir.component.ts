@@ -4,18 +4,17 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-qs-customer-target',
-  templateUrl: './qs-customer-target.component.html',
-  styleUrls: ['./qs-customer-target.component.scss']
+  selector: 'app-item-active-dist-elamir',
+  templateUrl: './item-active-dist-elamir.component.html',
+  styleUrls: ['./item-active-dist-elamir.component.scss']
 })
-export class QsCustomerTargetComponent {
+export class ItemActiveDistElamirComponent {
   file: File | null = null;
   fileName: string | null = null;
   errorMessage: string | null = null;
   isUploading: boolean = false; // Track upload state
   isDownloading: boolean = false; // Track download state
   isFileUploaded: boolean = false; // Flag to track file upload completion
-  // isSending: boolean = false; // Track if messages are being sent
   successMessage: string | null = null; // Store success message
   isSendingData: boolean = false; // Track send message request status
   isDeletingData: boolean = false; // Track send message request status
@@ -83,7 +82,7 @@ export class QsCustomerTargetComponent {
     const headers = { Authorization: `Bearer ${token}` };
 
     this.http
-      .get(`${environment.apiUrl}/template/download?templateName=QSCustomerTarget`, {
+      .get(`${environment.apiUrl}/template/download?templateName=ItemActiveDistElamir`, {
         responseType: 'blob',
         headers,
       })
@@ -92,7 +91,7 @@ export class QsCustomerTargetComponent {
           const url = window.URL.createObjectURL(response);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'QSCustomerTarget_API.xlsx'; // Set the default name for the downloaded file
+          a.download = 'ItemActiveDistElamir_API.xlsx'; // Set the default name for the downloaded file
           a.click();
           window.URL.revokeObjectURL(url);
           this.isDownloading = false; // Reset downloading flag
@@ -118,7 +117,7 @@ export class QsCustomerTargetComponent {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
-    const url = `${environment.apiUrl}/Excel/Sql2017/insertdata?fileName=${this.fileName}&tableName=QSCustomerTarget`;
+    const url = `${environment.apiUrl}/Excel/Sql2017/insertdata?fileName=${this.fileName}&tableName=ItemActiveDistElamir`;
     console.log(`Sending request to: ${url}`);
 
     this.http
@@ -146,7 +145,7 @@ export class QsCustomerTargetComponent {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
   
-    const url = `${environment.apiUrl}/Excel/Sql2017/deletedata?tableName=QSCustomerTarget`;
+    const url = `${environment.apiUrl}/Excel/Sql2017/deletedata?tableName=ItemActiveDistElamir`;
     console.log(`Sending request to: ${url}`);
   
     // Optional: Add a loading state for the delete operation

@@ -9,7 +9,7 @@
       </button>
     </div>
   
-    <h2 class="mb-4">Add Data To QSCustomerBrandTarget Table</h2>
+    <h2 class="mb-4">Add Data To ItemActiveDistElamir Table</h2>
   
     <!-- Download Button under the header -->
     <div class="mt-4 pb-3">
@@ -25,10 +25,10 @@
     <div class="pb-3">
       <button
         (click)="deleteTableFromDatabase()"
-        [disabled]="isUploading"
+        [disabled]="isDeletingData"
         class="btn btn-danger w-100"
       >
-        {{ isUploading ? 'Deleting...' : 'Delete Table Data' }}
+        {{ isDeletingData ? 'Deleting...' : 'Delete Table Data' }}
       </button>
     </div>
   

@@ -14,7 +14,11 @@ export class HomeComponent {
       name: 'Add Data',
       submenus: [
         { name: 'QSCustomerBrandTarget', action: '/qscustomerbrandtarget' },
-        { name: 'QSCustomerTarget', action: '/qscustomertarget' }
+        { name: 'QSCustomerTarget', action: '/qscustomertarget' },
+        { name: 'IGPSalesmanTarget', action: '/igpsalesmantarget' },
+        { name: 'IGPItemElamir', action: '/igpitemelamir' },
+        { name: 'PSKUItemElamir', action: '/pskuitemelamir' },
+        { name: 'ItemActiveDistElamir', action: '/itemactivedistelamir' },
       ]
     }
   ];

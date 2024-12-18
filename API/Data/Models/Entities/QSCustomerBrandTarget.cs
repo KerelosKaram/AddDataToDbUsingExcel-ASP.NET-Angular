@@ -2,6 +2,7 @@ namespace API.Data.Models.Entities.Sql2017
 {
     public class QSCustomerBrandTarget : BaseEntity
     {
+        //wait for delete until approaval
         public int ID { get; set; }
         public string SalesmanCode { get; set; }
         public string CustomerCode { get; set; }

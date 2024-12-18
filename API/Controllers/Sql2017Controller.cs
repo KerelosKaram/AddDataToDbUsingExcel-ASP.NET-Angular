@@ -1,3 +1,4 @@
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -41,33 +42,25 @@ namespace API.Controllers
             try
             {
                 var dbName = "msales-pro";
-                // Construct the file path using the provided file name
                 string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Upload", "Sql2017", "ExcelFiles", $"{fileName}");
 
-                // Check if the file exists
                 if (!System.IO.File.Exists(filePath))
                 {
                     return NotFound($"File with name {fileName} not found.");
                 }
 
-                // Create a MemoryStream to store the file content
                 using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 using var memoryStream = new MemoryStream();
-                
-                // Copy the content of the FileStream to the MemoryStream
                 await fileStream.CopyToAsync(memoryStream);
-
-                // Reset the position of the memory stream before using it
                 memoryStream.Position = 0;
 
-                // Dynamically get the entity type from the provided name
                 Type entityType = Type.GetType($"API.Data.Models.Entities.Sql2017.{tableName}");
                 if (entityType == null)
                 {
                     return BadRequest($"Entity type {tableName} not found.");
                 }
 
-                // Pass the MemoryStream and entity type to the service for processing
+                // Pass the MemoryStream, entity type, dbName, and addColumn flag to the service for processing
                 await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
 
                 return Ok(new { message = "File processed successfully." });
@@ -77,5 +70,38 @@ namespace API.Controllers
                 return StatusCode(500, $"Error during import: {ex.Message}");
             }
         }
+
+        [HttpGet("Excel/Sql2017/deletedata")]
+        public async Task<IActionResult> DeleteDataFromTable([FromQuery] string tableName)
+        {
+            try
+            {
+                var dbName = "msales-pro";
+
+                // Resolve the entity type dynamically
+                var entityType = Type.GetType($"API.Data.Models.Entities.Sql2017.{tableName}");
+                if (entityType == null)
+                {
+                    return BadRequest($"Entity type '{tableName}' not found.");
+                }
+
+                // Get the generic method definition from the service
+                var method = _excelImportService.GetType()
+                    .GetMethod(nameof(_excelImportService.DeleteDataFromDatabase));
+
+                // Make the method generic with the resolved entity type
+                var genericMethod = method.MakeGenericMethod(entityType);
+
+                // Invoke the method dynamically, passing the database name
+                await (Task)genericMethod.Invoke(_excelImportService, new object[] { dbName });
+
+                return Ok(new { message = $"All data from '{tableName}' table has been deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting data: {ex.Message}");
+            }
+        }
+
     }
 }

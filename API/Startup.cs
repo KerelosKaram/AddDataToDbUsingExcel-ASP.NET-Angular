@@ -2,6 +2,7 @@ using System.Text;
 using API.Data.AppDbContext.Identity;
 using API.Data.AppDbContext.OneNineTwo;
 using API.Data.AppDbContext.Sql2017DbContext;
+using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +20,7 @@ namespace MessagingApp
         // This method is used to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add your database contexts
             services.AddDbContext<IdentityDbContext>(options =>
             {
                 options.UseSqlServer(_config.GetConnectionString("IdentityConnection"));
@@ -34,6 +36,7 @@ namespace MessagingApp
                 options.UseSqlServer(_config.GetConnectionString("OneNineTwoConnection"));
             });
 
+            // Add CORS policy
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAngularApp", builder =>
@@ -66,14 +69,26 @@ namespace MessagingApp
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("HasSmsClaim", policy =>
-                    policy.RequireClaim("SMS"));
+                {
+                    policy.RequireClaim("SMS");
+                    policy.RequireClaim("IGPItemElamir");
+                    policy.RequireClaim("IGPSalesmanTarget");
+                    policy.RequireClaim("PSKUItemElamir");
+                    policy.RequireClaim("QSCustomerBrandTarget");
+                    policy.RequireClaim("QSCustomerTarget");
+                });
             });
 
+            // Registering the IHttpContextAccessor service
+            services.AddHttpContextAccessor();
+
+            // Register other services
             services.AddScoped<ExcelImportService>(); // Register the service
 
+            // Add controllers
             services.AddControllers();
 
-            // Add services to the container (e.g., Swagger, EndpointsApiExplorer)
+            // Add Swagger and API Explorer services
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }

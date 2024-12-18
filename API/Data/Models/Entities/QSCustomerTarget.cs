@@ -2,6 +2,7 @@ namespace API.Data.Models.Entities.Sql2017
 {
     public class QSCustomerTarget : BaseEntity
     {
+        //wait for delete until approaval
         public int ID { get; set; }
         public string CustomerCode { get; set; }
         public decimal Target_LE { get; set; }

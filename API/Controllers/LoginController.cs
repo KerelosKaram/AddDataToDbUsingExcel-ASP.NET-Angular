@@ -16,9 +16,11 @@ namespace API.Controllers
         private readonly IConfiguration _config;
         private readonly string _domain = "Elamir";
         private readonly IdentityDbContext _context; // Assuming you have a DbContext for your database
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoginController(IConfiguration config, IdentityDbContext context)
+        public LoginController(IConfiguration config, IdentityDbContext context, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _config = config;
             _context = context;
         }
@@ -109,78 +111,63 @@ namespace API.Controllers
         }
 
         private async Task<string> GenerateJwtToken(string username)
-        {
-            var jwtSettings = _config.GetSection("JwtSettings");
-            var key = jwtSettings["Key"];
+{
+    var jwtSettings = _config.GetSection("JwtSettings");
+    var key = jwtSettings["Key"];
 
-            if (key!.Length < 32)
-            {
-                throw new ArgumentException("JWT Key must be at least 32 characters long.");
-            }
+    // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Prevent claim type mapping
 
-            var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-            var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
 
-            // Step 1: Retrieve roles for the user from the AssignedRolesToEmployees table
-            var roles = await _context.AssignedRolesToEmployees
-                .Where(are => are.EmpUserName == username) // Using EmpUserName to find the user
-                .Join(_context.Roles, 
-                    are => are.RoleID, 
-                    r => r.RoleID, 
-                    (are, r) => r.RoleName) // Get RoleName for each assigned role
-                .ToListAsync();
+    if (key!.Length < 32)
+    {
+        throw new ArgumentException("JWT Key must be at least 32 characters long.");
+    }
 
-            // Step 2: Log the roles - this will show the roles for debugging
-            Console.WriteLine($"Roles for user {username}: {string.Join(", ", roles)}");
+    var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+    var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
 
-            // Step 3: Create claims for the JWT token
-            // Dynamically add role claims based on the roles retrieved
-            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+    // Step 1: Retrieve roles for the user from the AssignedRolesToEmployees table
+    var roles = await _context.AssignedRolesToEmployees
+        .Where(are => are.EmpUserName == username)
+        .Join(_context.Roles, 
+            are => are.RoleID, 
+            r => r.RoleID, 
+            (are, r) => r.RoleName)
+        .ToListAsync();
 
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+    // Step 2: Create claims for the JWT token
+    var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
 
-            // Step 4: Check if the roles contain "SMS" and add a claim if it exists
-            // if (roles.Contains("SMS"))
-            // {
-            //     claims.Add(new Claim("SMS", "Enabled")); // Add your specific claim here
-            // }
-            // if (roles.Contains("QsCustomerBrandTarget"))
-            // {
-            //     claims.Add(new Claim("QsCustomerBrandTarget", "Enabled")); // Add your specific claim here
-            // }
-            // if (roles.Contains("QSCustomerTarget"))
-            // {
-            //     claims.Add(new Claim("QSCustomerTarget", "Enabled")); // Add your specific claim here
-            // }
+    var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, username),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+    };
 
-            foreach (var role in roles)
-            {
-                // Example: Use the role name as the claim type and "Enabled" as the default value
-                claims.Add(new Claim(role, "Enabled"));
-            }
+    // Add role claims to the list
+    claims.AddRange(roleClaims);
 
-            // Step 5: Add role claims to the JWT token
-            claims.AddRange(roleClaims);
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiresInMinutes"]!)),
+        Issuer = jwtSettings["Issuer"],
+        Audience = jwtSettings["Audience"],
+        SigningCredentials = credentials
+    };
 
-            // Proceed with generating the JWT token as before
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiresInMinutes"]!)),
-                Issuer = jwtSettings["Issuer"],
-                Audience = jwtSettings["Audience"],
-                SigningCredentials = credentials
-            };
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+    // After token creation, set the claims in the HttpContext so it's accessible globally
+    var identity = new ClaimsIdentity(claims, "jwt");
+    var principal = new ClaimsPrincipal(identity);
+    _httpContextAccessor.HttpContext.User = principal;
 
-            return tokenHandler.WriteToken(token);
-        }
+    return tokenHandler.WriteToken(token);
+}
+
+
 
     }
 

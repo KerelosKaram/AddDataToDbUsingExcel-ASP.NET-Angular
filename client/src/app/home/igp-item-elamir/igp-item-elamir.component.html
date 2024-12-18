@@ -1,0 +1,88 @@
+<div class="container py-3">
+  <!-- Home Button aligned to the right -->
+  <div class="mb-4 d-flex justify-content-end">
+    <button class="btn btn-secondary" (click)="navigateToHome()">Go to Home</button>
+  </div>
+
+  <h2 class="mb-4">Add Data To IGPItemElamir Table</h2>
+
+  <!-- Download Button under the header -->
+  <div class="mt-4 pb-3">
+    <button
+      *ngIf="!isDownloading"
+      class="btn btn-success w-100"
+      (click)="downloadFile()"
+    >
+      Download Template File
+    </button>
+  </div>
+
+  <div class="pb-3">
+    <button
+      (click)="deleteTableFromDatabase()"
+      [disabled]="isDeletingData"
+      class="btn btn-danger w-100"
+    >
+      {{ isDeletingData ? 'Deleting...' : 'Delete Table Data' }}
+    </button>
+  </div>
+
+  <div class="form-group">
+    <label for="file-upload" class="form-label">Choose an Excel file</label>
+    <input
+      id="file-upload"
+      type="file"
+      (change)="onFileChange($event)"
+      class="form-control"
+    />
+  </div>
+
+  <!-- File Name Display -->
+  <div *ngIf="fileName" class="alert alert-info mt-3">
+    <span>Selected File: {{ fileName }}</span>
+  </div>
+
+  <!-- Error Message Box -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success Message after sending -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <!-- Upload / Send Message Buttons -->
+  <div class="d-flex justify-content-between mt-4">
+    <button
+      *ngIf="file && !isUploading && !isFileUploaded"
+      class="btn btn-primary"
+      (click)="uploadFile()"
+    >
+      Upload
+    </button>
+
+    <button
+      class="btn btn-warning"
+      [disabled]="isSendingData || !isFileUploaded || isUploading"
+      (click)="addDataToTable()"
+      [ngClass]="{
+        'btn-disabled': isSendingData,
+        'btn-warning-loading': isSendingData
+      }"
+    >
+      <span
+        *ngIf="isSendingData"
+        class="spinner-border spinner-border-sm"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      Add data
+    </button>
+  </div>
+
+  <!-- Success Message after Upload -->
+  <div *ngIf="isFileUploaded && !errorMessage" class="alert alert-success mt-3">
+    File uploaded successfully! Ready to add data to database.
+  </div>
+</div>

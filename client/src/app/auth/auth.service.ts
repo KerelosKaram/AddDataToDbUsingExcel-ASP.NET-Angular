@@ -50,10 +50,15 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
-  // Retrieve roles from localStorage
   getRoles(): string[] {
     const roles = localStorage.getItem(this.rolesKey);
-    return roles ? JSON.parse(roles) : [];
+    if (roles) {
+      const parsedRoles = JSON.parse(roles);
+
+      // Check if the roles are nested and flatten them
+      return Array.isArray(parsedRoles[0]) ? parsedRoles.flat() : parsedRoles;
+    }
+    return [];
   }
 
   // Retrieve claims from localStorage
@@ -93,6 +98,7 @@ export class AuthService {
     const roles = this.getRoles();
     return roles.includes(role);
   }
+  
 
   // Method to log the user in (this is just an example, adjust as needed)
   login(): void {
