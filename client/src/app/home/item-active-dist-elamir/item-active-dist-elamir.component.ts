@@ -106,36 +106,41 @@ export class ItemActiveDistElamirComponent {
 
   addDataToTable(): void {
     if (!this.isFileUploaded) {
-      this.errorMessage = 'Please upload a file before adding data to database.';
-      return;
+        this.errorMessage = 'Please upload a file before adding data to database.';
+        return;
     }
-    
-    this.errorMessage = null;
 
-    this.isSendingData = true; // Set sending flag
-    this.isUploading = true; // Show uploading status
+    this.errorMessage = null;
+    this.isSendingData = true;
+    this.isUploading = true;
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
     const url = `${environment.apiUrl}/Excel/Sql2017/insertdata?fileName=${this.fileName}&tableName=ItemActiveDistElamir`;
     console.log(`Sending request to: ${url}`);
 
-    this.http
-      .post(url, {}, { headers })
-      .subscribe(
-        (response) => {
-          console.log('Data added to database successfully', response);
-          this.isUploading = false;
-          this.isSendingData = false; // Reset sending flag
-          this.isFileUploaded = false; // Optionally reset after sending
+    this.http.post(url, {}, { headers }).subscribe(
+        (response: any) => {
+            console.log('Data added to database successfully', response);
+            this.isUploading = false;
+            this.isSendingData = false;
+            this.isFileUploaded = false;
+
+            if (response.errorMessages && response.errorMessages.length > 0) {
+              this.errorMessage = `Errors occurred: ${response.errorMessages.join(', ')}`;
+            }
+            else
+            {
+              this.successMessage = `Data added to database successfully. ${response.linesAdded} lines were added.`;
+            }
         },
         (error) => {
-          console.error('Error adding data to database', error);
-          this.errorMessage = 'Error adding data to database. Please try again.';
-          this.isUploading = false;
-          this.isSendingData = false; // Reset sending flag on error
+            console.error('Error adding data to database', error);
+            this.errorMessage = 'Error adding data to database. Please try again.';
+            this.isUploading = false;
+            this.isSendingData = false;
         }
-      );
+    );
   }
 
   deleteTableFromDatabase(): void {

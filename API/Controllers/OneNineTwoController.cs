@@ -70,9 +70,10 @@ namespace API.Controllers
                 }
 
                 // Pass the MemoryStream and entity type to the service for processing
-                await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
+                // await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
+                var (linesAdded, errorMessages) = await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
 
-                return Ok(new { message = "File processed successfully." });
+                return Ok(new { message = "File processed successfully.", linesAdded, errorMessages });
             }
             catch (Exception ex)
             {

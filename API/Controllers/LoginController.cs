@@ -111,63 +111,61 @@ namespace API.Controllers
         }
 
         private async Task<string> GenerateJwtToken(string username)
-{
-    var jwtSettings = _config.GetSection("JwtSettings");
-    var key = jwtSettings["Key"];
+        {
+            var jwtSettings = _config.GetSection("JwtSettings");
+            var key = jwtSettings["Key"];
 
-    // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Prevent claim type mapping
-
-
-    if (key!.Length < 32)
-    {
-        throw new ArgumentException("JWT Key must be at least 32 characters long.");
-    }
-
-    var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-    var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
-
-    // Step 1: Retrieve roles for the user from the AssignedRolesToEmployees table
-    var roles = await _context.AssignedRolesToEmployees
-        .Where(are => are.EmpUserName == username)
-        .Join(_context.Roles, 
-            are => are.RoleID, 
-            r => r.RoleID, 
-            (are, r) => r.RoleName)
-        .ToListAsync();
-
-    // Step 2: Create claims for the JWT token
-    var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
-
-    var claims = new List<Claim>
-    {
-        new Claim(JwtRegisteredClaimNames.Sub, username),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    };
-
-    // Add role claims to the list
-    claims.AddRange(roleClaims);
-
-    var tokenDescriptor = new SecurityTokenDescriptor
-    {
-        Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiresInMinutes"]!)),
-        Issuer = jwtSettings["Issuer"],
-        Audience = jwtSettings["Audience"],
-        SigningCredentials = credentials
-    };
-
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var token = tokenHandler.CreateToken(tokenDescriptor);
-
-    // After token creation, set the claims in the HttpContext so it's accessible globally
-    var identity = new ClaimsIdentity(claims, "jwt");
-    var principal = new ClaimsPrincipal(identity);
-    _httpContextAccessor.HttpContext.User = principal;
-
-    return tokenHandler.WriteToken(token);
-}
+            // JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // Prevent claim type mapping
 
 
+            if (key!.Length < 32)
+            {
+                throw new ArgumentException("JWT Key must be at least 32 characters long.");
+            }
+
+            var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
+
+            // Step 1: Retrieve roles for the user from the AssignedRolesToEmployees table
+            var roles = await _context.AssignedRolesToEmployees
+                .Where(are => are.EmpUserName == username)
+                .Join(_context.Roles, 
+                    are => are.RoleID, 
+                    r => r.RoleID, 
+                    (are, r) => r.RoleName)
+                .ToListAsync();
+
+            // Step 2: Create claims for the JWT token
+            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
+
+            // Add role claims to the list
+            claims.AddRange(roleClaims);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiresInMinutes"]!)),
+                Issuer = jwtSettings["Issuer"],
+                Audience = jwtSettings["Audience"],
+                SigningCredentials = credentials
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            // After token creation, set the claims in the HttpContext so it's accessible globally
+            var identity = new ClaimsIdentity(claims, "jwt");
+            var principal = new ClaimsPrincipal(identity);
+            _httpContextAccessor.HttpContext.User = principal;
+
+            return tokenHandler.WriteToken(token);
+        }
 
     }
 

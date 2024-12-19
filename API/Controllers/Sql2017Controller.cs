@@ -30,7 +30,7 @@ namespace API.Controllers
             // Return the file path or an identifier (e.g., filename)
             return Ok(new { filePath = filepath });
         }
-
+        
         [HttpPost("Excel/Sql2017/insertdata")]
         public async Task<IActionResult> InsertDataFromExcelFile([FromQuery] string fileName, [FromQuery] string tableName)
         {
@@ -60,10 +60,9 @@ namespace API.Controllers
                     return BadRequest($"Entity type {tableName} not found.");
                 }
 
-                // Pass the MemoryStream, entity type, dbName, and addColumn flag to the service for processing
-                await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
+                var (linesAdded, errorMessages) = await _excelImportService.ImportExcelData(memoryStream, entityType, dbName);
 
-                return Ok(new { message = "File processed successfully." });
+                return Ok(new { message = "File processed successfully.", linesAdded, errorMessages });
             }
             catch (Exception ex)
             {

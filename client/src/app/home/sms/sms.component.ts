@@ -124,11 +124,18 @@ export class SmsComponent {
     this.http
       .post(url, {}, { headers })
       .subscribe(
-        (response) => {
+        (response: any) => {
           console.log('Messages sent successfully', response);
           this.isUploading = false;
           this.isSendingMessages = false; // Reset sending flag
           this.isFileUploaded = false; // Optionally reset after sending
+          if (response.errorMessages && response.errorMessages.length > 0) {
+            this.errorMessage = `Errors occurred: ${response.errorMessages.join(', ')}`;
+          }
+          else
+          {
+            this.successMessage = `Data added to database successfully. ${response.linesAdded} lines were added. Please verify with the administrator whether all the messages were sent successfully.`;
+          }
         },
         (error) => {
           console.error('Error sending messages', error);

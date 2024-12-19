@@ -94,33 +94,32 @@ namespace API.Services
         }
 
         // Method to import data from Excel and insert into the database
-        public async Task ImportExcelData(MemoryStream stream, Type entityType, string dbName)
+        public async Task<(int linesAdded, List<string> errorMessages)> ImportExcelData(MemoryStream stream, Type entityType, string dbName)
         {
+            int linesAdded = 0;
+            var errorMessages = new List<string>();
 
-            // ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // For non-commercial use
             try
             {
-                // Create a list to hold the data with the correct entity type
                 var dataListType = typeof(List<>).MakeGenericType(entityType);
                 var dataList = (IList)Activator.CreateInstance(dataListType);
 
                 using (var package = new ExcelPackage(stream))
                 {
-                    var worksheet = package.Workbook.Worksheets[0];  // Assuming data is in the first worksheet
+                    var worksheet = package.Workbook.Worksheets[0];
                     int rowCount = worksheet.Dimension.Rows;
                     int colCount = worksheet.Dimension.Columns;
 
-                    // Read the header row to map the Excel columns to entity properties
                     var headerRow = new List<string>();
                     for (int col = 1; col <= colCount; col++)
                     {
-                        headerRow.Add(worksheet.Cells[1, col].Text.Trim()); // Trim to avoid spaces in headers
+                        headerRow.Add(worksheet.Cells[1, col].Text.Trim());
                     }
 
-                    // Read each subsequent row and map the values to the entity
-                    for (int row = 2; row <= rowCount; row++)  // Starting from row 2 (data rows)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         var entityInstance = Activator.CreateInstance(entityType);
+                        bool rowHasError = false;
 
                         for (int col = 1; col <= colCount; col++)
                         {
@@ -136,12 +135,10 @@ namespace API.Services
                                     {
                                         if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                         {
-                                            // Set to null for nullable types
                                             property.SetValue(entityInstance, null);
                                         }
                                         else
                                         {
-                                            // Set default value for non-nullable types
                                             property.SetValue(entityInstance, Activator.CreateInstance(property.PropertyType));
                                         }
                                     }
@@ -149,74 +146,66 @@ namespace API.Services
                                     {
                                         var propertyType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 
-                                        try
+                                        if (propertyType == typeof(int))
                                         {
-                                            if (propertyType == typeof(int))
-                                            {
-                                                property.SetValue(entityInstance, int.TryParse(cellValue, out int intValue) ? intValue : default(int?));
-                                            }
-                                            else if (propertyType == typeof(DateTime))
-                                            {
-                                                property.SetValue(entityInstance, DateTime.TryParse(cellValue, out DateTime dateTimeValue) ? dateTimeValue : default(DateTime?));
-                                            }
-                                            else if (propertyType == typeof(decimal))
-                                            {
-                                                property.SetValue(entityInstance, decimal.TryParse(cellValue, out decimal decimalValue) ? decimalValue : default(decimal?));
-                                            }
-                                            else if (propertyType == typeof(bool))
-                                            {
-                                                property.SetValue(entityInstance, bool.TryParse(cellValue, out bool boolValue) ? boolValue : default(bool?));
-                                            }
-                                            else if (propertyType == typeof(string))
-                                            {
-                                                property.SetValue(entityInstance, cellValue);
-                                            }
-                                            else
-                                            {
-                                                property.SetValue(entityInstance, Convert.ChangeType(cellValue, propertyType));
-                                            }
+                                            property.SetValue(entityInstance, int.TryParse(cellValue, out int intValue) ? intValue : default(int?));
                                         }
-                                        catch (Exception ex)
+                                        else if (propertyType == typeof(DateTime))
                                         {
-                                            Console.WriteLine($"Error mapping column {columnName} with value '{cellValue}': {ex.Message}");
+                                            property.SetValue(entityInstance, DateTime.TryParse(cellValue, out DateTime dateTimeValue) ? dateTimeValue : default(DateTime?));
+                                        }
+                                        else if (propertyType == typeof(decimal))
+                                        {
+                                            property.SetValue(entityInstance, decimal.TryParse(cellValue, out decimal decimalValue) ? decimalValue : default(decimal?));
+                                        }
+                                        else if (propertyType == typeof(bool))
+                                        {
+                                            property.SetValue(entityInstance, bool.TryParse(cellValue, out bool boolValue) ? boolValue : default(bool?));
+                                        }
+                                        else if (propertyType == typeof(string))
+                                        {
+                                            property.SetValue(entityInstance, cellValue);
+                                        }
+                                        else
+                                        {
+                                            property.SetValue(entityInstance, Convert.ChangeType(cellValue, propertyType));
                                         }
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine($"Error mapping column {columnName} with value '{cellValue}': {ex.Message}");
+                                    errorMessages.Add($"Error in row {row}, column {columnName}");
+                                    rowHasError = true;
                                 }
                             }
                             else
                             {
-                                Console.WriteLine($"No matching property found for column: {columnName}");
+                                errorMessages.Add($"No matching property found for column: {columnName} in row {row}");
+                                rowHasError = true;
                             }
                         }
 
-                        // Add the created instance of the entity to the list
-                        dataList?.Add(entityInstance);
+                        if (!rowHasError)
+                        {
+                            dataList?.Add(entityInstance);
+                        }
                     }
 
-                    // Explicitly pass the correct type and dbName to InsertDataIntoDatabase
                     var method = typeof(ExcelImportService)?
                         .GetMethod("InsertDataIntoDatabase")?
                         .MakeGenericMethod(entityType);
 
-                    await (Task)method.Invoke(this, new object[] { dataList, dbName });  // Pass dbName here
+                    await (Task)method.Invoke(this, new object[] { dataList, dbName });
+
+                    linesAdded = dataList.Count;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error importing Excel data: {ex.Message}");
-
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
-                    Console.WriteLine($"Stack Trace: {ex.InnerException.StackTrace}");
-                }
-
-                throw;
+                errorMessages.Add($"General error during import: {ex.Message}");
             }
+
+            return (linesAdded, errorMessages);
         }
     }
 }

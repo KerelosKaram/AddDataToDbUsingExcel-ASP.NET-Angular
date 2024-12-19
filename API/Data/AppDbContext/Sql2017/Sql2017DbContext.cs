@@ -209,8 +209,8 @@ namespace API.Data.AppDbContext.Sql2017DbContext
                     .IsRequired(false); // Checked (nullable)
 
                 entity.Property(e => e.ItemActiveDistID)
-                    .IsRequired()
-                    .ValueGeneratedOnAddOrUpdate(); // Unchecked (non-nullable)
+                    .IsRequired();
+                    // .ValueGeneratedOnAddOrUpdate(); // Unchecked (non-nullable)
 
                 entity.Property(e => e.MOQ)
                     .IsRequired(false); // Checked (nullable)
