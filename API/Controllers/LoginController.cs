@@ -127,9 +127,14 @@ namespace API.Controllers
             var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
 
             // Step 1: Retrieve roles for the user from the AssignedRolesToEmployees table
+            if (_context.AssignedRolesToEmployees == null)
+            {
+                throw new InvalidOperationException("AssignedRolesToEmployees is null.");
+            }
+
             var roles = await _context.AssignedRolesToEmployees
                 .Where(are => are.EmpUserName == username)
-                .Join(_context.Roles, 
+                .Join(_context.Roles ?? throw new InvalidOperationException("Roles is null."),
                     are => are.RoleID, 
                     r => r.RoleID, 
                     (are, r) => r.RoleName)
@@ -162,7 +167,11 @@ namespace API.Controllers
             // After token creation, set the claims in the HttpContext so it's accessible globally
             var identity = new ClaimsIdentity(claims, "jwt");
             var principal = new ClaimsPrincipal(identity);
-            _httpContextAccessor.HttpContext.User = principal;
+            
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                _httpContextAccessor.HttpContext.User = principal;
+            }
 
             return tokenHandler.WriteToken(token);
         }

@@ -5,8 +5,8 @@ namespace API.Data.AppDbContext.Identity
 {
     public class IdentityDbContext : DbContext
     {
-        public DbSet<AssignedRolesToEmployees> AssignedRolesToEmployees { get; set; }
-        public DbSet<Role> Roles { get; set; }
+        public DbSet<AssignedRolesToEmployees>? AssignedRolesToEmployees { get; set; }
+        public DbSet<Role>? Roles { get; set; }
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options)
         {
         }

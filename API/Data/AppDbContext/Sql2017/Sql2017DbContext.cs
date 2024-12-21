@@ -8,11 +8,11 @@ namespace API.Data.AppDbContext.Sql2017DbContext
     public class Sql2017DbContext : DbContext
     {
 
-        public DbSet<QSCustomerBrandTarget> QSCustomerBrandTarget { get; set; }
-        public DbSet<QSCustomerTarget> QSCustomerTarget { get; set; }
-        public DbSet<IGPSalesmanTarget> IGPSalesmanTarget { get; set; }
-        public DbSet<IGPItemElamir> IGPItemElamir { get; set; }
-        public DbSet<ItemActiveDistElamir> ItemActiveDistElamir { get; set; }
+        public DbSet<QSCustomerBrandTarget>? QSCustomerBrandTarget { get; set; }
+        public DbSet<QSCustomerTarget>? QSCustomerTarget { get; set; }
+        public DbSet<IGPSalesmanTarget>? IGPSalesmanTarget { get; set; }
+        public DbSet<IGPItemElamir>? IGPItemElamir { get; set; }
+        public DbSet<ItemActiveDistElamir>? ItemActiveDistElamir { get; set; }
         
         public Sql2017DbContext(DbContextOptions<Sql2017DbContext> options) : base(options) 
         { 

@@ -9,9 +9,9 @@ namespace API.Data.Models.Entities.Sql2017
             InsertUser = GetCurrentUserName();
         }
 
-        public string ItemCode { get; set; }
+        public required string ItemCode { get; set; }
         public string? PSKUName { get; set; }
-        public string ElamirTradeChannelID { get; set; }
+        public required string ElamirTradeChannelID { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public string InsertUser { get; set; }

@@ -54,7 +54,7 @@ namespace API.Controllers
                 await fileStream.CopyToAsync(memoryStream);
                 memoryStream.Position = 0;
 
-                Type entityType = Type.GetType($"API.Data.Models.Entities.Sql2017.{tableName}");
+                Type? entityType = Type.GetType($"API.Data.Models.Entities.Sql2017.{tableName}");
                 if (entityType == null)
                 {
                     return BadRequest($"Entity type {tableName} not found.");
@@ -89,10 +89,25 @@ namespace API.Controllers
                     .GetMethod(nameof(_excelImportService.DeleteDataFromDatabase));
 
                 // Make the method generic with the resolved entity type
+                if (method == null)
+                {
+                    return StatusCode(500, "DeleteDataFromDatabase method not found.");
+                }
+
                 var genericMethod = method.MakeGenericMethod(entityType);
 
+                if (genericMethod == null)
+                {
+                    return StatusCode(500, "Failed to create generic method.");
+                }
+
                 // Invoke the method dynamically, passing the database name
-                await (Task)genericMethod.Invoke(_excelImportService, new object[] { dbName });
+                var task = (Task?)genericMethod?.Invoke(_excelImportService, new object[] { dbName });
+                if (task == null)
+                {
+                    return StatusCode(500, "Failed to invoke delete method.");
+                }
+                await task;
 
                 return Ok(new { message = $"All data from '{tableName}' table has been deleted successfully." });
             }

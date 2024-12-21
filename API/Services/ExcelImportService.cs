@@ -21,7 +21,7 @@ namespace API.Services
         private DbContext GetDbContext(Type entityType, string dbName)
         {
 
-            if (entityType.Namespace.Contains("API.Data.Models.Entities.Sql2017"))
+            if (entityType.Namespace != null && entityType.Namespace.Contains("API.Data.Models.Entities.Sql2017"))
             {
                 var options = new DbContextOptionsBuilder<Sql2017DbContext>();
                 options.UseSqlServer(_serviceProvider.GetRequiredService<IConfiguration>()
@@ -29,7 +29,7 @@ namespace API.Services
                     .Replace("{DB_NAME}", dbName));
                 return new Sql2017DbContext(options.Options);
             }
-            else if (entityType.Namespace.Contains("API.Data.Models.Entities.OneNineTwo"))
+            else if (entityType.Namespace != null && entityType.Namespace.Contains("API.Data.Models.Entities.OneNineTwo"))
             {
                 var options = new DbContextOptionsBuilder<OneNineTwoDbContext>();
                 options.UseSqlServer(_serviceProvider.GetRequiredService<IConfiguration>()
@@ -61,8 +61,9 @@ namespace API.Services
                     throw new Exception("Table name could not be determined.");
                 }
 
-                // Use a parameterized raw SQL query to avoid injection risks
-                await context.Database.ExecuteSqlRawAsync($"DELETE FROM [{tableName}]");
+                // Use FormattableString to create a parameterized query
+                FormattableString sql = $"DELETE FROM [{tableName}]";
+                await context.Database.ExecuteSqlAsync(sql);
 
                 Console.WriteLine($"All records in table '{tableName}' have been deleted successfully.");
             }
@@ -102,7 +103,7 @@ namespace API.Services
             try
             {
                 var dataListType = typeof(List<>).MakeGenericType(entityType);
-                var dataList = (IList)Activator.CreateInstance(dataListType);
+                var dataList = (IList?)Activator.CreateInstance(dataListType);
 
                 using (var package = new ExcelPackage(stream))
                 {
@@ -172,7 +173,7 @@ namespace API.Services
                                         }
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                     errorMessages.Add($"Error in row {row}, column {columnName}");
                                     rowHasError = true;
@@ -195,9 +196,25 @@ namespace API.Services
                         .GetMethod("InsertDataIntoDatabase")?
                         .MakeGenericMethod(entityType);
 
-                    await (Task)method.Invoke(this, new object[] { dataList, dbName });
+                    if (method != null && dataList != null)
+                    {
+                        // var result = method.Invoke(this, new object[] { dataList, dbName });
+                        var result = method.Invoke(this, [dataList, dbName]);
+                        if (result != null)
+                        {
+                            await (Task)result;
+                        }
+                        else
+                        {
+                            errorMessages.Add("Method invocation returned null.");
+                        }
+                    }
+                    else
+                    {
+                        errorMessages.Add("Method or dataList is null.");
+                    }
 
-                    linesAdded = dataList.Count;
+                    linesAdded = dataList?.Count ?? 0;
                 }
             }
             catch (Exception ex)

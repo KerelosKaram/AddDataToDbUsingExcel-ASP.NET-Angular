@@ -63,7 +63,7 @@ namespace API.Controllers
                 memoryStream.Position = 0;
 
                 // Dynamically get the entity type from the provided name
-                Type entityType = Type.GetType($"API.Data.Models.Entities.OneNineTwo.{tableName}");
+                Type? entityType = Type.GetType($"API.Data.Models.Entities.OneNineTwo.{tableName}");
                 if (entityType == null)
                 {
                     return BadRequest($"Entity type {tableName} not found.");
@@ -101,11 +101,26 @@ namespace API.Controllers
                 var method = _excelImportService.GetType()
                     .GetMethod(nameof(_excelImportService.DeleteDataFromDatabase));
 
+                if (method == null)
+                {
+                    return StatusCode(500, "DeleteDataFromDatabase method not found.");
+                }
+
                 // Make the method generic with the resolved entity type
                 var genericMethod = method.MakeGenericMethod(entityType);
 
+                if (genericMethod == null)
+                {
+                    return StatusCode(500, "Failed to create generic method.");
+                }
+
                 // Invoke the method dynamically, passing the database name
-                await (Task)genericMethod.Invoke(_excelImportService, new object[] { dbName });
+                var task = (Task?)genericMethod?.Invoke(_excelImportService, new object[] { dbName });
+                if (task == null)
+                {
+                    return StatusCode(500, "Failed to invoke delete method.");
+                }
+                await task;
 
                 return Ok(new { message = $"All data from '{tableName}' table has been deleted successfully." });
             }

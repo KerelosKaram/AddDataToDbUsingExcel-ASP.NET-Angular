@@ -49,7 +49,12 @@ namespace MessagingApp
 
             // Configure JWT Authentication
             var jwtSettings = _config.GetSection("JwtSettings");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]); // Secret key
+            var keyString = jwtSettings["Key"];
+            if (string.IsNullOrEmpty(keyString))
+            {
+                throw new ArgumentNullException("JWT key is not configured.");
+            }
+            var key = Encoding.UTF8.GetBytes(keyString); // Secret key
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

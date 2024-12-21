@@ -4,9 +4,9 @@ namespace API.Data.Models.Entities.Sql2017
     {
         //wait for delete until approaval
         public int ID { get; set; }
-        public string SalesmanCode { get; set; }
-        public string CustomerCode { get; set; }
-        public string SubBrand { get; set; }
+        public string? SalesmanCode { get; set; }
+        public string? CustomerCode { get; set; }
+        public string? SubBrand { get; set; }
         public decimal target_LE { get; set; }
         public decimal Target_SU { get; set; }
         public decimal Target_Qty { get; set; }

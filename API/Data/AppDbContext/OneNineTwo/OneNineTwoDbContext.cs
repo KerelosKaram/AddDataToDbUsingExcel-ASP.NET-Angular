@@ -5,7 +5,7 @@ namespace API.Data.AppDbContext.OneNineTwo
 {
     public class OneNineTwoDbContext : DbContext
     {
-        public DbSet<MessageOut> MessageOut { get; set; }
+        public DbSet<MessageOut>? MessageOut { get; set; }
         public OneNineTwoDbContext(DbContextOptions<OneNineTwoDbContext> options) : base(options)
         {
         }
