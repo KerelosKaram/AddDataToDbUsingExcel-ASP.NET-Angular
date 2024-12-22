@@ -115,7 +115,7 @@ namespace API.Controllers
                 }
 
                 // Invoke the method dynamically, passing the database name
-                var task = (Task?)genericMethod?.Invoke(_excelImportService, new object[] { dbName });
+                var task = (Task?)genericMethod?.Invoke(_excelImportService, [dbName]);
                 if (task == null)
                 {
                     return StatusCode(500, "Failed to invoke delete method.");

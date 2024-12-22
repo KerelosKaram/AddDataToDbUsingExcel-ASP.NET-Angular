@@ -5,11 +5,6 @@ namespace API.Controllers
 {
     public class DownloadTemplateController : BaseApiController
     {
-        private readonly ExcelImportService _excelImportService;
-        public DownloadTemplateController(ExcelImportService excelImportService)
-        {
-            _excelImportService = excelImportService;
-        }
 
         [HttpGet("template/download")]
         public async Task<IActionResult> DownloadExcelFileAsync([FromQuery] string templateName)

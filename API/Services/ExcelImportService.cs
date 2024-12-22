@@ -1,4 +1,5 @@
 using System.Collections;
+using API.Data.AppDbContext.DbElWagd;
 using API.Data.AppDbContext.OneNineTwo;
 using API.Data.AppDbContext.Sql2017DbContext;
 using API.Data.Models;
@@ -37,6 +38,14 @@ namespace API.Services
                     .Replace("{DB_NAME}", dbName));
                 return new OneNineTwoDbContext(options.Options);
             }
+            else if (entityType.Namespace != null && entityType.Namespace.Contains("API.Data.Models.Entities.DbElWagd"))
+            {
+                var options = new DbContextOptionsBuilder<DbElWagdDbContext>();
+                options.UseSqlServer(_serviceProvider.GetRequiredService<IConfiguration>()
+                    .GetConnectionString("DbElWagd")?
+                    .Replace("{DB_NAME}", dbName));
+                return new DbElWagdDbContext(options.Options);
+            }
 
             throw new ArgumentException($"Entity type {entityType.Name} does not belong to a recognized namespace.");
         }
@@ -60,10 +69,9 @@ namespace API.Services
                 {
                     throw new Exception("Table name could not be determined.");
                 }
-
                 // Use FormattableString to create a parameterized query
-                FormattableString sql = $"DELETE FROM [{tableName}]";
-                await context.Database.ExecuteSqlAsync(sql);
+                string sql = $"DELETE FROM [{tableName}]";
+                await context.Database.ExecuteSqlRawAsync(sql);
 
                 Console.WriteLine($"All records in table '{tableName}' have been deleted successfully.");
             }
@@ -132,9 +140,24 @@ namespace API.Services
                                 var cellValue = worksheet.Cells[row, col].Text;
                                 try
                                 {
+                                    // if (string.IsNullOrWhiteSpace(cellValue))
+                                    // {
+                                    //     if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                                    //     {
+                                    //         property.SetValue(entityInstance, null);
+                                    //     }
+                                    //     else
+                                    //     {
+                                    //         property.SetValue(entityInstance, Activator.CreateInstance(property.PropertyType));
+                                    //     }
+                                    // }
                                     if (string.IsNullOrWhiteSpace(cellValue))
                                     {
-                                        if (Nullable.GetUnderlyingType(property.PropertyType) != null)
+                                        if (property.PropertyType == typeof(string))
+                                        {
+                                            property.SetValue(entityInstance, null); // or string.Empty if you prefer
+                                        }
+                                        else if (Nullable.GetUnderlyingType(property.PropertyType) != null)
                                         {
                                             property.SetValue(entityInstance, null);
                                         }
@@ -173,9 +196,9 @@ namespace API.Services
                                         }
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception ex)
                                 {
-                                    errorMessages.Add($"Error in row {row}, column {columnName}");
+                                    errorMessages.Add($"Error in row {row}, column {columnName}, error: {ex.Message}");
                                     rowHasError = true;
                                 }
                             }
@@ -219,7 +242,7 @@ namespace API.Services
             }
             catch (Exception ex)
             {
-                errorMessages.Add($"General error during import: {ex.Message}");
+                errorMessages.Add($"General error during import: {ex.InnerException?.Message ?? ex.Message}");
             }
 
             return (linesAdded, errorMessages);

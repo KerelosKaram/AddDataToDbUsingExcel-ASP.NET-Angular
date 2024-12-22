@@ -17,7 +17,8 @@ export class HomeComponent {
         { name: 'QSCustomerTarget', action: '/qscustomertarget' },
         { name: 'IGPSalesmanTarget', action: '/igpsalesmantarget' },
         { name: 'IGPItemElamir', action: '/igpitemelamir' },
-        { name: 'PSKUItemElamir', action: '/pskuitemelamir' },
+        { name: 'PSKUItemElamirSql2017', action: '/pskuitemelamirsql2017' },
+        { name: 'PSKUItemElamirDbElWagd', action: '/pskuitemelamirdbelwagd' },
         { name: 'ItemActiveDistElamir', action: '/itemactivedistelamir' },
       ]
     }

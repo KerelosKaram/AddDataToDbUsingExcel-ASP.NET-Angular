@@ -8,9 +8,10 @@ import { NotAuthorizedComponent } from './auth/not-authorized/not-authorized.com
 import { QsCustomerBrandTargetComponent } from './home/qs-customer-brand-target/qs-customer-brand-target.component';
 import { QsCustomerTargetComponent } from './home/qs-customer-target/qs-customer-target.component';
 import { IgpSalesmanTargetComponent } from './home/igp-salesman-target/igp-salesman-target.component';
-import { PskuItemElamirComponent } from './home/psku-item-elamir/psku-item-elamir.component';
+import { PskuItemElamirSql2017Component } from './home/psku-item-elamir-sql2017/psku-item-elamir-sql2017.component';
 import { IgpItemElamirComponent } from './home/igp-item-elamir/igp-item-elamir.component';
 import { ItemActiveDistElamirComponent } from './home/item-active-dist-elamir/item-active-dist-elamir.component';
+import { PskuItemElamirDbElWagdComponent } from './home/psku-item-elamir-dbelwagd/psku-item-elamir-dbelwagd.component';
 
 const routes: Routes = [
   // Login route does not have the NavBar
@@ -23,7 +24,8 @@ const routes: Routes = [
   { path: 'qscustomertarget', component: QsCustomerTargetComponent, canActivate: [AuthGuard], data: { role: 'QSCustomerTarget' } },  // Role required to access this route
   { path: 'igpsalesmantarget', component: IgpSalesmanTargetComponent, canActivate: [AuthGuard], data: { role: 'IGPSalesmanTarget' } },  // Role required to access this route
   { path: 'igpitemelamir', component: IgpItemElamirComponent, canActivate: [AuthGuard], data: { role: 'IGPItemElamir' } },  // Role required to access this route
-  { path: 'pskuitemelamir', component: PskuItemElamirComponent, canActivate: [AuthGuard], data: { role: 'PSKUItemElamir' } },  // Role required to access this route
+  { path: 'pskuitemelamirsql2017', component: PskuItemElamirSql2017Component, canActivate: [AuthGuard], data: { role: 'PSKUItemElamirSql2017' } },  // Role required to access this route
+  { path: 'pskuitemelamirdbelwagd', component: PskuItemElamirDbElWagdComponent, canActivate: [AuthGuard], data: { role: 'PSKUItemElamirDbElWagd' } },  // Role required to access this route
   { path: 'qscustomerbrandtarget', component: QsCustomerBrandTargetComponent, canActivate: [AuthGuard], data: { role: 'QSCustomerBrandTarget' } },  // Role required to access this route
   { path: 'itemactivedistelamir', component: ItemActiveDistElamirComponent, canActivate: [AuthGuard], data: { role: 'ItemActiveDistElamir' } },  // Role required to access this route
   

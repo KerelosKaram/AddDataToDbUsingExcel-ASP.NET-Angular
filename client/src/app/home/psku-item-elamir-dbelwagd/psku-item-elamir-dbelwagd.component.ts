@@ -4,11 +4,11 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-psku-item-elamir',
-  templateUrl: './psku-item-elamir.component.html',
-  styleUrls: ['./psku-item-elamir.component.scss']
+  selector: 'app-psku-item-elamir-dbelwagd',
+  templateUrl: './psku-item-elamir-dbelwagd.component.html',
+  styleUrls: ['./psku-item-elamir-dbelwagd.component.scss']
 })
-export class PskuItemElamirComponent {
+export class PskuItemElamirDbElWagdComponent {
 
   file: File | null = null;
   fileName: string | null = null;
@@ -60,7 +60,7 @@ export class PskuItemElamirComponent {
     const headers = { Authorization: `Bearer ${token}` };
 
     this.http
-      .post(`${environment.apiUrl}/Excel/Sql2017/upload`, formData, { headers })
+      .post(`${environment.apiUrl}/Excel/DbElWagd/upload`, formData, { headers })
       .subscribe(
         (response) => {
           console.log('File uploaded successfully', response);
@@ -83,7 +83,7 @@ export class PskuItemElamirComponent {
     const headers = { Authorization: `Bearer ${token}` };
 
     this.http
-      .get(`${environment.apiUrl}/template/download?templateName=PSKUItemElamir`, {
+      .get(`${environment.apiUrl}/template/download?templateName=PSKUItemElamirDbElWagd`, {
         responseType: 'blob',
         headers,
       })
@@ -92,7 +92,7 @@ export class PskuItemElamirComponent {
           const url = window.URL.createObjectURL(response);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'PSKUItemElamir_API.xlsx'; // Set the default name for the downloaded file
+          a.download = 'PSKUItemElamirDbElWagd_API.xlsx'; // Set the default name for the downloaded file
           a.click();
           window.URL.revokeObjectURL(url);
           this.isDownloading = false; // Reset downloading flag
@@ -118,7 +118,7 @@ export class PskuItemElamirComponent {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
 
-    const url = `${environment.apiUrl}/Excel/Sql2017/insertdata?fileName=${this.fileName}&tableName=PSKUItemElamir`;
+    const url = `${environment.apiUrl}/Excel/DbElWagd/insertdata?fileName=${this.fileName}&tableName=PSKUItemElamir`;
     console.log(`Sending request to: ${url}`);
 
     this.http
@@ -153,7 +153,7 @@ export class PskuItemElamirComponent {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
   
-    const url = `${environment.apiUrl}/Excel/Sql2017/deletedata?tableName=PSKUItemElamir`;
+    const url = `${environment.apiUrl}/Excel/DbElWagd/deletedata?tableName=PSKUItemElamir`;
     console.log(`Sending request to: ${url}`);
   
     // Optional: Add a loading state for the delete operation

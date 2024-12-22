@@ -1,4 +1,5 @@
 using System.Text;
+using API.Data.AppDbContext.DbElWagd;
 using API.Data.AppDbContext.Identity;
 using API.Data.AppDbContext.OneNineTwo;
 using API.Data.AppDbContext.Sql2017DbContext;
@@ -34,6 +35,11 @@ namespace MessagingApp
             services.AddDbContext<OneNineTwoDbContext>(options =>
             {
                 options.UseSqlServer(_config.GetConnectionString("OneNineTwoConnection"));
+            });
+
+            services.AddDbContext<DbElWagdDbContext>(options =>
+            {
+                options.UseSqlServer(_config.GetConnectionString("DbElWagd"));
             });
 
             // Add CORS policy
