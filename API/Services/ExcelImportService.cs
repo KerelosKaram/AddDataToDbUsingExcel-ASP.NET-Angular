@@ -1,4 +1,5 @@
 using System.Collections;
+using API.Data.AppDbContext.DBAX;
 using API.Data.AppDbContext.DbElWagd;
 using API.Data.AppDbContext.OneNineTwo;
 using API.Data.AppDbContext.Sql2017DbContext;
@@ -16,7 +17,6 @@ namespace API.Services
         public ExcelImportService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-
         }
         
         private DbContext GetDbContext(Type entityType, string dbName)
@@ -45,6 +45,14 @@ namespace API.Services
                     .GetConnectionString("DbElWagd")?
                     .Replace("{DB_NAME}", dbName));
                 return new DbElWagdDbContext(options.Options);
+            }
+            else if (entityType.Namespace != null && entityType.Namespace.Contains("API.Data.Models.Entities.DBAX"))
+            {
+                var options = new DbContextOptionsBuilder<DBAXDbContext>();
+                options.UseSqlServer(_serviceProvider.GetRequiredService<IConfiguration>()
+                    .GetConnectionString("DBAX")?
+                    .Replace("{DB_NAME}", dbName));
+                return new DBAXDbContext(options.Options);
             }
 
             throw new ArgumentException($"Entity type {entityType.Name} does not belong to a recognized namespace.");

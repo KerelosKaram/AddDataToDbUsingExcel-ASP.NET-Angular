@@ -1,4 +1,5 @@
 using System.Text;
+using API.Data.AppDbContext.DBAX;
 using API.Data.AppDbContext.DbElWagd;
 using API.Data.AppDbContext.Identity;
 using API.Data.AppDbContext.OneNineTwo;
@@ -40,6 +41,11 @@ namespace MessagingApp
             services.AddDbContext<DbElWagdDbContext>(options =>
             {
                 options.UseSqlServer(_config.GetConnectionString("DbElWagd"));
+            });
+
+            services.AddDbContext<DBAXDbContext>(options =>
+            {
+                options.UseSqlServer(_config.GetConnectionString("DBAX"));
             });
 
             // Add CORS policy
@@ -127,7 +133,7 @@ namespace MessagingApp
 
             app.UseEndpoints(endpoints =>
             {
-                // Map the /weatherforecast route
+                // Map the controllers route
                 endpoints.MapControllers();
             });
         }

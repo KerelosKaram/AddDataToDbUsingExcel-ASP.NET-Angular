@@ -11,6 +11,7 @@ import { IgpItemElamirComponent } from './igp-item-elamir/igp-item-elamir.compon
 import { ItemActiveDistElamirComponent } from './item-active-dist-elamir/item-active-dist-elamir.component'; // Import MatButtonModule
 import { PskuItemElamirSql2017Component } from './psku-item-elamir-sql2017/psku-item-elamir-sql2017.component';
 import { PskuItemElamirDbElWagdComponent } from './psku-item-elamir-dbelwagd/psku-item-elamir-dbelwagd.component';
+import { ElamirCustomerClassification2Component } from './elamir-customer-classification2/elamir-customer-classification2.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { PskuItemElamirDbElWagdComponent } from './psku-item-elamir-dbelwagd/psk
     PskuItemElamirSql2017Component,
     PskuItemElamirDbElWagdComponent,
     ItemActiveDistElamirComponent,
+    ElamirCustomerClassification2Component,
   ],
   imports: [
     CommonModule,

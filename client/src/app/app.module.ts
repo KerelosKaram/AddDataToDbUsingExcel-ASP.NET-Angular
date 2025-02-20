@@ -11,6 +11,7 @@ import { NotAuthorizedComponent } from './auth/not-authorized/not-authorized.com
 import { HomeModule } from './home/home.module';  // Importing the HomeModule here
 import { NavBarComponent } from './shared/nav-bar.component'; // NavBar should be here
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+// import { ElamirCustomerClassification2Component } from './elamir-customer-classification2/elamir-customer-classification2.component';
 
 
 @NgModule({
@@ -27,7 +28,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ReactiveFormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-
   ],
   providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent],

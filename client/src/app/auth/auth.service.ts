@@ -11,8 +11,8 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/login`; // API endpoint for login
   private tokenKey = 'jwtToken';
-  private rolesKey = 'userRoles';
-  private claimsKey = 'userClaims';
+  // private rolesKey = 'userRoles';
+  // private claimsKey = 'userClaims';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -25,46 +25,29 @@ export class AuthService {
     });
   }
 
-  // Store token, roles, and claims in localStorage
+  // Update storeUserData to only store the token
   storeUserData(token: string): void {
     localStorage.setItem(this.tokenKey, token);
-  
-    // Decode token to extract roles and claims
-    const decodedToken = this.decodeJwtToken(token);
-  
-    // Extract roles and claims (you can adjust this based on your token structure)
-    // Assuming 'role' is stored as a string
-    const roles = decodedToken['role'] ? [decodedToken['role']] : decodedToken['userClaims']?.role ? [decodedToken['userClaims'].role] : [];
-    
-    const claims = decodedToken; // You can modify this to extract specific claims if necessary
-  
-    // Store roles and claims in localStorage
-    localStorage.setItem(this.rolesKey, JSON.stringify(roles));
-    localStorage.setItem(this.claimsKey, JSON.stringify(claims));
-  
-    this.router.navigate(['/home']);
   }
+
 
   // Retrieve the JWT token
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
   }
 
+  // Decode roles from the JWT on demand
   getRoles(): string[] {
-    const roles = localStorage.getItem(this.rolesKey);
-    if (roles) {
-      const parsedRoles = JSON.parse(roles);
-
-      // Check if the roles are nested and flatten them
-      return Array.isArray(parsedRoles[0]) ? parsedRoles.flat() : parsedRoles;
-    }
-    return [];
+    const token = this.getToken();
+    if (!token) return [];
+    const decodedToken = this.decodeJwtToken(token);
+    return decodedToken?.role || []; // Adjust based on your JWT structure
   }
 
-  // Retrieve claims from localStorage
+  // Decode claims on demand
   getClaims(): any {
-    const claims = localStorage.getItem(this.claimsKey);
-    return claims ? JSON.parse(claims) : null;
+    const token = this.getToken();
+    return token ? this.decodeJwtToken(token) : null;
   }
 
   // Check if token is valid and not expired
@@ -106,12 +89,9 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  // Logout and clear localStorage
   logout(): void {
     localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.rolesKey);
-    localStorage.removeItem(this.claimsKey);
-    this.router.navigateByUrl('/login'); // Redirect to login page after logout
+    this.router.navigateByUrl('/login');
   }
 
   // Example of making a request with the Bearer token

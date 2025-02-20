@@ -12,6 +12,7 @@ import { PskuItemElamirSql2017Component } from './home/psku-item-elamir-sql2017/
 import { IgpItemElamirComponent } from './home/igp-item-elamir/igp-item-elamir.component';
 import { ItemActiveDistElamirComponent } from './home/item-active-dist-elamir/item-active-dist-elamir.component';
 import { PskuItemElamirDbElWagdComponent } from './home/psku-item-elamir-dbelwagd/psku-item-elamir-dbelwagd.component';
+import { ElamirCustomerClassification2Component } from './home/elamir-customer-classification2/elamir-customer-classification2.component';
 
 const routes: Routes = [
   // Login route does not have the NavBar
@@ -28,6 +29,7 @@ const routes: Routes = [
   { path: 'pskuitemelamirdbelwagd', component: PskuItemElamirDbElWagdComponent, canActivate: [AuthGuard], data: { role: 'PSKUItemElamirDbElWagd' } },  // Role required to access this route
   { path: 'qscustomerbrandtarget', component: QsCustomerBrandTargetComponent, canActivate: [AuthGuard], data: { role: 'QSCustomerBrandTarget' } },  // Role required to access this route
   { path: 'itemactivedistelamir', component: ItemActiveDistElamirComponent, canActivate: [AuthGuard], data: { role: 'ItemActiveDistElamir' } },  // Role required to access this route
+  { path: 'elamircustomerclassification2', component: ElamirCustomerClassification2Component, canActivate: [AuthGuard], data: { role: 'elamircustomerclassification2' } },  // Role required to access this route
   
   { path: 'not-authorized', component: NotAuthorizedComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' },

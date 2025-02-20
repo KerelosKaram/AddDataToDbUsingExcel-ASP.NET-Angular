@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router // Inject the Router
   ) {}
 
   ngOnInit(): void {
@@ -33,12 +35,15 @@ export class LoginComponent implements OnInit {
 
       const loginData = this.loginForm.value;
 
+      // console.log(loginData);
+
       this.authService.checkUser(loginData).subscribe(
         (response) => {
           this.isLoading = false; // Hide spinner
           if (response && response.token) {
             // Store the JWT token and redirect to SMS page
             this.authService.storeUserData(response.token);
+            this.router.navigate(['/home']); // Add navigation here
           }
         },
         (error) => {

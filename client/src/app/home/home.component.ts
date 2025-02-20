@@ -20,6 +20,7 @@ export class HomeComponent {
         { name: 'PSKUItemElamirSql2017', action: '/pskuitemelamirsql2017' },
         { name: 'PSKUItemElamirDbElWagd', action: '/pskuitemelamirdbelwagd' },
         { name: 'ItemActiveDistElamir', action: '/itemactivedistelamir' },
+        { name: 'ElamirCustomerClassification2Component', action: '/elamircustomerclassification2' },
       ]
     }
   ];
